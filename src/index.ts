@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
-import { db } from './db/db';
+import { db } from './db/postgres/db';
 
 dotenv.config();
 
