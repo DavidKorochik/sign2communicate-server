@@ -9,7 +9,7 @@ import { Signing } from '../signing/Signing';
 
 @Entity('user')
 export class User extends BaseEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ nullable: false })
