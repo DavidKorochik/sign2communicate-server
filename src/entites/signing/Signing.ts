@@ -4,6 +4,7 @@ import {
   Column,
   PrimaryGeneratedColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { User } from '../user/User';
 
@@ -40,5 +41,6 @@ export class Signing extends BaseEntity {
   description: string;
 
   @ManyToOne(() => User, (user) => user.signings)
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }
