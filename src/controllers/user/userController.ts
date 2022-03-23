@@ -76,7 +76,7 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
-// Delete a user @api/user
+// Delete a user @api/user/:id
 router.delete('/:id', async (req: Request, res: Response) => {
   const id = req.params.id;
 
