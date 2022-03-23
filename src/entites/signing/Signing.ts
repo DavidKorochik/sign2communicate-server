@@ -4,12 +4,13 @@ import {
   Column,
   PrimaryGeneratedColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { User } from '../user/User';
 
 @Entity('signing')
 export class Signing extends BaseEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column('text', {
@@ -40,5 +41,6 @@ export class Signing extends BaseEntity {
   description: string;
 
   @ManyToOne(() => User, (user) => user.signings)
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }
