@@ -1,20 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { IUserPayload } from '../interfaces/user/user';
+import { IUserPayload, RequestExtendedWithUser } from '../interfaces/user/user';
 import dotenv from 'dotenv';
 
 dotenv.config();
-
-interface RequestExtendedWithUser extends Request {
-  user: {
-    id: string;
-    name: string;
-    personal_number: string;
-    phone_number: string;
-    military_unit: string;
-    role: string;
-  };
-}
 
 const auth: any = (
   req: RequestExtendedWithUser,
