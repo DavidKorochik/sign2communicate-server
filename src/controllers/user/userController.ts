@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { User } from '../../entites/user/User';
 import express, { Request, Response } from 'express';
+import { IUserPayload } from '../../interfaces/user/user';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -41,9 +42,15 @@ router.post('/', async (req: Request, res: Response) => {
 
     await user.save();
 
-    const payload = {
+    // Creating the user payload for the jsonwebtoken
+    const payload: IUserPayload = {
       user: {
         id: user.id,
+        name: user.name,
+        personal_number: user.personal_number,
+        phone_number: user.phone_number,
+        military_unit: user.military_unit,
+        role: user.role,
       },
     };
 
