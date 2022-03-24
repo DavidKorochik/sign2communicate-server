@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import { Signing } from '../../entites/signing/Signing';
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
