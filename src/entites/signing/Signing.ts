@@ -41,6 +41,6 @@ export class Signing extends BaseEntity {
   description: string;
 
   @ManyToOne(() => User, (user) => user.signings)
-  @JoinColumn({ name: 'user_data' })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 }
