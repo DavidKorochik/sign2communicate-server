@@ -9,7 +9,7 @@ dotenv.config();
 const router = express.Router();
 
 // Create a user @/api/user
-router.post('/', async (req: Request, res: Response) => {
+export const createUser: any = async (req: Request, res: Response) => {
   // Getting the data from req.body
   const { name, personal_number, phone_number, military_unit, role } = req.body;
 
@@ -46,11 +46,6 @@ router.post('/', async (req: Request, res: Response) => {
     const payload: IUserPayload = {
       user: {
         id: user.id,
-        name: user.name,
-        personal_number: user.personal_number,
-        phone_number: user.phone_number,
-        military_unit: user.military_unit,
-        role: user.role,
       },
     };
 
@@ -67,10 +62,10 @@ router.post('/', async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
-});
+};
 
 // Get all users @/api/user
-router.get('/', async (req: Request, res: Response) => {
+export const getUsers: any = async (req: Request, res: Response) => {
   try {
     // We get all the users in the database
     const users = await User.find();
@@ -81,10 +76,10 @@ router.get('/', async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
-});
+};
 
 // Delete a user @api/user/:id
-router.delete('/:id', async (req: Request, res: Response) => {
+export const deleteUser: any = async (req: Request, res: Response) => {
   const id = req.params.id;
 
   try {
@@ -101,6 +96,6 @@ router.delete('/:id', async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
-});
+};
 
 export default router;
