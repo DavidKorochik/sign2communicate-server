@@ -16,11 +16,11 @@ interface RequestExtendedWithUser extends Request {
   };
 }
 
-export default function auth(
+const auth: any = (
   req: RequestExtendedWithUser,
   res: Response,
   next: NextFunction
-) {
+) => {
   try {
     const token: string | undefined = req.header('auth-token');
 
@@ -37,4 +37,6 @@ export default function auth(
   } catch (err: any) {
     return res.status(401).json({ error: err.message });
   }
-}
+};
+
+export default auth;

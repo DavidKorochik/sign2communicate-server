@@ -8,7 +8,7 @@ dotenv.config();
 const router = express.Router();
 
 // Create a signing @/api/signing
-router.post('/', async (req: Request, res: Response) => {
+export const createSigning = async (req: Request, res: Response) => {
   const { equipment, signingDate, returningDate, time, description } = req.body;
 
   try {
@@ -26,10 +26,10 @@ router.post('/', async (req: Request, res: Response) => {
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
-});
+};
 
 // Get all signings @/api/signing
-router.get('/', async (req: Request, res: Response) => {
+export const getSignings = async (req: Request, res: Response) => {
   try {
     const signings = await Signing.find();
 
@@ -40,10 +40,10 @@ router.get('/', async (req: Request, res: Response) => {
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
-});
+};
 
 // Update a signing @/api/signing/:id
-router.put('/:id', async (req: Request, res: Response) => {
+export const updateSigning = async (req: Request, res: Response) => {
   const { equipment, signingDate, returningDate, time, description } = req.body;
   const id = req.params.id;
 
@@ -66,10 +66,10 @@ router.put('/:id', async (req: Request, res: Response) => {
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
-});
+};
 
 // Delete a signing @/api/signing/:id
-router.delete('/:id', async (req: Request, res: Response) => {
+export const deleteSigning = async (req: Request, res: Response) => {
   const id = req.params.id;
 
   try {
@@ -83,6 +83,6 @@ router.delete('/:id', async (req: Request, res: Response) => {
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
-});
+};
 
 export default router;
