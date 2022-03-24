@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import { db } from './db/postgres/db';
 import userRoutes from './routes/user/userRoutes';
 import signingRoutes from './routes/signing/signingRoutes';
+import authRoutes from './routes/auth/authRoutes';
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use(cors());
 
 app.use('/api/user', userRoutes);
 app.use('/api/signing', signingRoutes);
+app.use('/api/auth', authRoutes);
 
 app.listen(process.env.PORT, async () => {
   await db();
