@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { User } from '../../entites/user/User';
 import express, { Request, Response } from 'express';
 import { IUserPayload } from '../../interfaces/user/user';
+import client from '../../db/redis/redis';
 import dotenv from 'dotenv';
 
 dotenv.config();

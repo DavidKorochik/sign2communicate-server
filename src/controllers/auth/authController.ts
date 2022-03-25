@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../../entites/user/User';
+import client from '../../db/redis/redis';
 import {
   RequestExtendedWithUser,
   IUserPayload,
