@@ -28,7 +28,7 @@ export const createSigning: any = async (
     });
 
     // Caching the new signings that was created
-    await client.setEx(signing.id, 3600, JSON.stringify(signing));
+    await client.set(signing.id, JSON.stringify(signing));
 
     const signingCached = await client.get(signing.id);
 
@@ -37,9 +37,9 @@ export const createSigning: any = async (
 
     // Checking if there is the signing that was created cached, if not return the signing that was created from the database
     if (signingCached) {
-      return res.status(201).json(signingCached);
+      return res.status(201).json(JSON.parse(signingCached));
     } else {
-      await client.setEx(signing.id, 3600, JSON.stringify(signing));
+      await client.set(signing.id, JSON.stringify(signing));
       return res.status(201).json(signing);
     }
   } catch (err: any) {
@@ -57,7 +57,7 @@ export const getSignings: any = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'There are no signings' });
 
     // Caching the signings
-    await client.setEx('signings', 3600, JSON.stringify(signings));
+    await client.set('signings', JSON.stringify(signings));
 
     // Getting the cached signings
     const signingsCached = await client.get('signings');
@@ -66,7 +66,7 @@ export const getSignings: any = async (req: Request, res: Response) => {
     if (signingsCached) {
       return res.status(200).json(JSON.parse(signingsCached));
     } else {
-      await client.setEx('signings', 3600, JSON.stringify(signings));
+      await client.set('signings', JSON.stringify(signings));
       return res.status(200).json(signings);
     }
   } catch (err: any) {
@@ -119,7 +119,7 @@ export const deleteSigning: any = async (req: Request, res: Response) => {
     // Deleting the signing from the cache
     await client.del(req.params.id);
 
-    res.json(signing);
+    res.status(200).json(signing);
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
