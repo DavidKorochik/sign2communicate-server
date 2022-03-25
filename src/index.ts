@@ -21,8 +21,8 @@ app.use('/api/auth', authRoutes);
 app.listen(process.env.PORT, async () => {
   try {
     await db();
-    console.log(`App is running on port ${process.env.PORT}`);
     await client.connect();
+    console.log(`App is running on port ${process.env.PORT}`);
   } catch (err: any) {
     console.error(err.message);
   }
