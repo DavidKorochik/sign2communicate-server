@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -62,40 +39,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = __importDefault(require("express"));
-var cors_1 = __importDefault(require("cors"));
-var dotenv = __importStar(require("dotenv"));
-var db_1 = require("./db/postgres/db");
-var redis_1 = __importDefault(require("./db/redis/redis"));
-var userRoutes_1 = __importDefault(require("./routes/user/userRoutes"));
-var signingRoutes_1 = __importDefault(require("./routes/signing/signingRoutes"));
-var authRoutes_1 = __importDefault(require("./routes/auth/authRoutes"));
-dotenv.config();
-var app = (0, express_1.default)();
-app.use(express_1.default.json());
-app.use((0, cors_1.default)());
-app.use('/api/user', userRoutes_1.default);
-app.use('/api/signing', signingRoutes_1.default);
-app.use('/api/auth', authRoutes_1.default);
-app.listen(process.env.PORT, function () { return __awaiter(void 0, void 0, void 0, function () {
+exports.db = void 0;
+var typeorm_1 = require("typeorm");
+var dotenv_1 = __importDefault(require("dotenv"));
+var User_1 = require("../../entites/user/User");
+var Signing_1 = require("../../entites/signing/Signing");
+dotenv_1.default.config();
+var db = function () { return __awaiter(void 0, void 0, void 0, function () {
     var err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 3, , 4]);
-                return [4 /*yield*/, (0, db_1.db)()];
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, (0, typeorm_1.createConnection)({
+                        type: 'postgres',
+                        host: process.env.DB_HOST,
+                        port: 8080,
+                        username: process.env.DB_USERNAME,
+                        password: process.env.DB_PASSWORD,
+                        database: process.env.DB_NAME,
+                        entities: [User_1.User, Signing_1.Signing],
+                        synchronize: true,
+                    })];
             case 1:
                 _a.sent();
-                return [4 /*yield*/, redis_1.default.connect()];
+                console.log('Connected to the database');
+                return [3 /*break*/, 3];
             case 2:
-                _a.sent();
-                console.log("App is running on port ".concat(process.env.PORT));
-                return [3 /*break*/, 4];
-            case 3:
                 err_1 = _a.sent();
-                console.error(err_1.message);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                console.error(err_1);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
-}); });
+}); };
+exports.db = db;
