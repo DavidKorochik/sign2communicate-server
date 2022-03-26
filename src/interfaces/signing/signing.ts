@@ -1,4 +1,5 @@
 export interface ISigning {
+  id?: string;
   equipment: string[];
   signingDate: string;
   returningDate: string;
