@@ -1,6 +1,7 @@
 import { Signing } from '../../entites/signing/Signing';
 import express, { Request, Response } from 'express';
 import { RequestExtendedWithUser } from '../../interfaces/user/user';
+import { ISigning } from '../../interfaces/signing/signing';
 import client from '../../db/redis/redis';
 import dotenv from 'dotenv';
 import { getRepository } from 'typeorm';
@@ -51,7 +52,7 @@ export const createSigning: any = async (
 export const getSignings: any = async (req: Request, res: Response) => {
   try {
     // Finding all of the signings in the database
-    const signings = await Signing.find();
+    const signings: ISigning[] = await Signing.find();
 
     if (!signings)
       return res.status(404).json({ error: 'There are no signings' });
@@ -85,19 +86,38 @@ export const updateSigning: any = async (req: Request, res: Response) => {
 
     if (!signing) return res.status(404).json({ error: 'Signing not found' });
 
+    const signingCached = await client.get(id);
+
     // Merging the changes that were made from the req.body to the signing that we have found
-    getRepository(Signing).merge(signing, {
-      equipment,
-      returningDate,
-      signingDate,
-      time,
-      description,
-    });
+    if (signingCached) {
+      getRepository(Signing).merge(JSON.parse(signingCached), {
+        equipment,
+        returningDate,
+        signingDate,
+        time,
+        description,
+      });
+
+      await getRepository(Signing).save(JSON.parse(signingCached));
+
+      return res.status(200).json(JSON.parse(signingCached));
+    } else {
+      await client.setEx(signing.id, 3600, JSON.stringify(signing));
+
+      getRepository(Signing).merge(signing, {
+        equipment,
+        returningDate,
+        signingDate,
+        time,
+        description,
+      });
+
+      await getRepository(Signing).save(signing);
+
+      return res.status(200).json(signing);
+    }
 
     // Saving the new updated signing
-    const signingUpdated: any = await getRepository(Signing).save(signing);
-
-    res.json(201).json(signingUpdated);
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
@@ -109,7 +129,7 @@ export const deleteSigning: any = async (req: Request, res: Response) => {
 
   try {
     // Searching for the signing that we wish to delete
-    const signing = await Signing.findOne(id);
+    const signing: ISigning | undefined = await Signing.findOne(id);
 
     if (!signing) return res.status(404).json({ error: 'Signing not found' });
 
@@ -117,9 +137,23 @@ export const deleteSigning: any = async (req: Request, res: Response) => {
     await Signing.delete(id);
 
     // Deleting the signing from the cache
-    await client.del(req.params.id);
+    await client.del(id);
 
     res.status(200).json(signing);
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+export const deleteAllSignings: any = async (req: Request, res: Response) => {
+  try {
+    const signings = await Signing.find();
+
+    if (!signings) return res.status(404).json({ error: 'No signings found' });
+
+    await Signing.remove(signings);
+
+    res.status(200).json(signings);
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
