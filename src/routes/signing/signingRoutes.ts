@@ -5,6 +5,7 @@ import {
   getSignings,
   updateSigning,
   deleteSigning,
+  deleteAllSignings,
 } from '../../controllers/signing/signingController';
 
 const router: IRouter = express.Router();
@@ -20,5 +21,8 @@ router.put('/:id', auth, updateSigning);
 
 // Delete a signing @/api/signing/:id
 router.delete('/:id', auth, deleteSigning);
+
+// Delete all signings @/api/signing
+router.delete('/', auth, deleteAllSignings);
 
 export default router;
