@@ -147,12 +147,15 @@ export const deleteSigning: any = async (req: Request, res: Response) => {
 
 export const deleteAllSignings: any = async (req: Request, res: Response) => {
   try {
+    // Find all the signings that we watn to delete
     const signings = await Signing.find();
 
     if (!signings) return res.status(404).json({ error: 'No signings found' });
 
+    // Remove all of the signings
     await Signing.remove(signings);
 
+    // Send all the signings that we are removing
     res.status(200).json(signings);
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
