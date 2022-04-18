@@ -65,7 +65,7 @@ export const getLoggedInUser: any = async (
 
     // Checking if the user that is logged in is in the cache we return it, if not we set it to the cache and return the user that is saved in the database
     if (userCached) {
-      return res.status(200).json(userCached);
+      return res.status(200).json(JSON.parse(userCached));
     } else {
       await client.setEx(req.user.id, 3600, JSON.stringify(user));
       return res.status(200).json(user);
