@@ -15,4 +15,6 @@ router.get('/', auth_1.default, signingController_1.getSignings);
 router.put('/:id', auth_1.default, signingController_1.updateSigning);
 // Delete a signing @/api/signing/:id
 router.delete('/:id', auth_1.default, signingController_1.deleteSigning);
+// Delete all signings @/api/signing
+router.delete('/', auth_1.default, signingController_1.deleteAllSignings);
 exports.default = router;

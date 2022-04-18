@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteSigning = exports.updateSigning = exports.getSignings = exports.createSigning = void 0;
+exports.deleteAllSignings = exports.deleteSigning = exports.updateSigning = exports.getSignings = exports.createSigning = void 0;
 var Signing_1 = require("../../entites/signing/Signing");
 var express_1 = __importDefault(require("express"));
 var redis_1 = __importDefault(require("../../db/redis/redis"));
@@ -130,7 +130,7 @@ var getSignings = function (req, res) { return __awaiter(void 0, void 0, void 0,
 exports.getSignings = getSignings;
 // Update a signing @/api/signing/:id
 var updateSigning = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, equipment, signingDate, returningDate, time, description, id, signing, signingUpdated, err_3;
+    var _a, equipment, signingDate, returningDate, time, description, id, signing, signingCached, err_3;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -138,13 +138,30 @@ var updateSigning = function (req, res) { return __awaiter(void 0, void 0, void 
                 id = req.params.id;
                 _b.label = 1;
             case 1:
-                _b.trys.push([1, 4, , 5]);
+                _b.trys.push([1, 9, , 10]);
                 return [4 /*yield*/, Signing_1.Signing.findOne(id)];
             case 2:
                 signing = _b.sent();
                 if (!signing)
                     return [2 /*return*/, res.status(404).json({ error: 'Signing not found' })];
-                // Merging the changes that were made from the req.body to the signing that we have found
+                return [4 /*yield*/, redis_1.default.get(id)];
+            case 3:
+                signingCached = _b.sent();
+                if (!signingCached) return [3 /*break*/, 5];
+                (0, typeorm_1.getRepository)(Signing_1.Signing).merge(JSON.parse(signingCached), {
+                    equipment: equipment,
+                    returningDate: returningDate,
+                    signingDate: signingDate,
+                    time: time,
+                    description: description,
+                });
+                return [4 /*yield*/, (0, typeorm_1.getRepository)(Signing_1.Signing).save(JSON.parse(signingCached))];
+            case 4:
+                _b.sent();
+                return [2 /*return*/, res.status(200).json(JSON.parse(signingCached))];
+            case 5: return [4 /*yield*/, redis_1.default.setEx(signing.id, 3600, JSON.stringify(signing))];
+            case 6:
+                _b.sent();
                 (0, typeorm_1.getRepository)(Signing_1.Signing).merge(signing, {
                     equipment: equipment,
                     returningDate: returningDate,
@@ -153,28 +170,28 @@ var updateSigning = function (req, res) { return __awaiter(void 0, void 0, void 
                     description: description,
                 });
                 return [4 /*yield*/, (0, typeorm_1.getRepository)(Signing_1.Signing).save(signing)];
-            case 3:
-                signingUpdated = _b.sent();
-                res.json(201).json(signingUpdated);
-                return [3 /*break*/, 5];
-            case 4:
+            case 7:
+                _b.sent();
+                return [2 /*return*/, res.status(200).json(signing)];
+            case 8: return [3 /*break*/, 10];
+            case 9:
                 err_3 = _b.sent();
                 return [2 /*return*/, res.status(500).json({ error: err_3.message })];
-            case 5: return [2 /*return*/];
+            case 10: return [2 /*return*/];
         }
     });
 }); };
 exports.updateSigning = updateSigning;
 // Delete a signing @/api/signing/:id
 var deleteSigning = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var id, signing, err_4;
+    var id, signing, signingsAfterDeletion, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 id = req.params.id;
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 5, , 6]);
+                _a.trys.push([1, 6, , 7]);
                 return [4 /*yield*/, Signing_1.Signing.findOne(id)];
             case 2:
                 signing = _a.sent();
@@ -186,18 +203,48 @@ var deleteSigning = function (req, res) { return __awaiter(void 0, void 0, void 
                 // Deleting the signing based on the id that was passed
                 _a.sent();
                 // Deleting the signing from the cache
-                return [4 /*yield*/, redis_1.default.del(req.params.id)];
+                return [4 /*yield*/, redis_1.default.del(id)];
             case 4:
                 // Deleting the signing from the cache
                 _a.sent();
-                res.status(200).json(signing);
-                return [3 /*break*/, 6];
+                return [4 /*yield*/, Signing_1.Signing.find()];
             case 5:
+                signingsAfterDeletion = _a.sent();
+                res.status(200).json(signingsAfterDeletion);
+                return [3 /*break*/, 7];
+            case 6:
                 err_4 = _a.sent();
                 return [2 /*return*/, res.status(500).json({ error: err_4.message })];
-            case 6: return [2 /*return*/];
+            case 7: return [2 /*return*/];
         }
     });
 }); };
 exports.deleteSigning = deleteSigning;
+var deleteAllSignings = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var signings, err_5;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 3, , 4]);
+                return [4 /*yield*/, Signing_1.Signing.find()];
+            case 1:
+                signings = _a.sent();
+                if (!signings)
+                    return [2 /*return*/, res.status(404).json({ error: 'No signings found' })];
+                // Remove all of the signings
+                return [4 /*yield*/, Signing_1.Signing.remove(signings)];
+            case 2:
+                // Remove all of the signings
+                _a.sent();
+                // Send all the signings that we are removing
+                res.status(200).json(signings);
+                return [3 /*break*/, 4];
+            case 3:
+                err_5 = _a.sent();
+                return [2 /*return*/, res.status(500).json({ error: err_5.message })];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.deleteAllSignings = deleteAllSignings;
 exports.default = router;

@@ -139,7 +139,10 @@ export const deleteSigning: any = async (req: Request, res: Response) => {
     // Deleting the signing from the cache
     await client.del(id);
 
-    res.status(200).json(signing);
+    // Get all of the signings after we delete the signing with the corrsponding id
+    const signingsAfterDeletion: ISigning[] = await Signing.find();
+
+    res.status(200).json(signingsAfterDeletion);
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
