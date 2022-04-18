@@ -10,6 +10,14 @@ dotenv.config();
 
 const router = express.Router();
 
+interface SigningUpdateBody {
+  description: string;
+  equipment: string[];
+  returningDate: string;
+  signingDate: string;
+  time: string;
+}
+
 // Create a signing @/api/signing
 export const createSigning: any = async (
   req: RequestExtendedWithUser,
@@ -78,46 +86,39 @@ export const getSignings: any = async (req: Request, res: Response) => {
 // Update a signing @/api/signing/:id
 export const updateSigning: any = async (req: Request, res: Response) => {
   const { equipment, signingDate, returningDate, time, description } = req.body;
+  const obj = {} as SigningUpdateBody;
+
+  if (description) obj.description = description;
+  if (signingDate) obj.signingDate = signingDate;
+  if (returningDate) obj.returningDate = returningDate;
+  if (time) obj.time = time;
+  if (equipment) obj.equipment = equipment;
+
   const id = req.params.id;
 
   try {
     // Finiding one signing with the id that is passed
-    const signing = await Signing.findOne(id);
+    const signing = await Signing.findOne({ where: { id } });
 
     if (!signing) return res.status(404).json({ error: 'Signing not found' });
 
-    const signingCached = await client.get(id);
+    // const signingCached = await client.get(id);
 
     // Merging the changes that were made from the req.body to the signing that we have found
-    if (signingCached) {
-      getRepository(Signing).merge(JSON.parse(signingCached), {
-        equipment,
-        returningDate,
-        signingDate,
-        time,
-        description,
-      });
+    // if (signingCached) {
+    //   getRepository(Signing).merge(JSON.parse(signingCached), obj);
+    //   await getRepository(Signing).save(JSON.parse(signingCached));
+    //   return res.status(200).json(JSON.parse(signingCached));
+    // } else {
+    // await client.setEx(signing.id, 3600, JSON.stringify(obj));
 
-      await getRepository(Signing).save(JSON.parse(signingCached));
+    getRepository(Signing).merge(signing, obj);
 
-      return res.status(200).json(JSON.parse(signingCached));
-    } else {
-      await client.setEx(signing.id, 3600, JSON.stringify(signing));
-
-      getRepository(Signing).merge(signing, {
-        equipment,
-        returningDate,
-        signingDate,
-        time,
-        description,
-      });
-
-      await getRepository(Signing).save(signing);
-
-      return res.status(200).json(signing);
-    }
+    await getRepository(Signing).save(signing);
 
     // Saving the new updated signing
+    return res.status(200).json(signing);
+    // }
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
