@@ -102,23 +102,13 @@ export const updateSigning: any = async (req: Request, res: Response) => {
 
     if (!signing) return res.status(404).json({ error: 'Signing not found' });
 
-    // const signingCached = await client.get(id);
-
     // Merging the changes that were made from the req.body to the signing that we have found
-    // if (signingCached) {
-    //   getRepository(Signing).merge(JSON.parse(signingCached), obj);
-    //   await getRepository(Signing).save(JSON.parse(signingCached));
-    //   return res.status(200).json(JSON.parse(signingCached));
-    // } else {
-    // await client.setEx(signing.id, 3600, JSON.stringify(obj));
-
     getRepository(Signing).merge(signing, obj);
 
     await getRepository(Signing).save(signing);
 
     // Saving the new updated signing
     return res.status(200).json(signing);
-    // }
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
