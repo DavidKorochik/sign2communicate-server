@@ -130,54 +130,49 @@ var getSignings = function (req, res) { return __awaiter(void 0, void 0, void 0,
 exports.getSignings = getSignings;
 // Update a signing @/api/signing/:id
 var updateSigning = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, equipment, signingDate, returningDate, time, description, id, signing, signingCached, err_3;
+    var _a, equipment, signingDate, returningDate, time, description, obj, id, signing, err_3;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 _a = req.body, equipment = _a.equipment, signingDate = _a.signingDate, returningDate = _a.returningDate, time = _a.time, description = _a.description;
+                obj = {};
+                if (description)
+                    obj.description = description;
+                if (signingDate)
+                    obj.signingDate = signingDate;
+                if (returningDate)
+                    obj.returningDate = returningDate;
+                if (time)
+                    obj.time = time;
+                if (equipment)
+                    obj.equipment = equipment;
                 id = req.params.id;
                 _b.label = 1;
             case 1:
-                _b.trys.push([1, 9, , 10]);
-                return [4 /*yield*/, Signing_1.Signing.findOne(id)];
+                _b.trys.push([1, 4, , 5]);
+                return [4 /*yield*/, Signing_1.Signing.findOne({ where: { id: id } })];
             case 2:
                 signing = _b.sent();
                 if (!signing)
                     return [2 /*return*/, res.status(404).json({ error: 'Signing not found' })];
-                return [4 /*yield*/, redis_1.default.get(id)];
-            case 3:
-                signingCached = _b.sent();
-                if (!signingCached) return [3 /*break*/, 5];
-                (0, typeorm_1.getRepository)(Signing_1.Signing).merge(JSON.parse(signingCached), {
-                    equipment: equipment,
-                    returningDate: returningDate,
-                    signingDate: signingDate,
-                    time: time,
-                    description: description,
-                });
-                return [4 /*yield*/, (0, typeorm_1.getRepository)(Signing_1.Signing).save(JSON.parse(signingCached))];
-            case 4:
-                _b.sent();
-                return [2 /*return*/, res.status(200).json(JSON.parse(signingCached))];
-            case 5: return [4 /*yield*/, redis_1.default.setEx(signing.id, 3600, JSON.stringify(signing))];
-            case 6:
-                _b.sent();
-                (0, typeorm_1.getRepository)(Signing_1.Signing).merge(signing, {
-                    equipment: equipment,
-                    returningDate: returningDate,
-                    signingDate: signingDate,
-                    time: time,
-                    description: description,
-                });
+                // const signingCached = await client.get(id);
+                // Merging the changes that were made from the req.body to the signing that we have found
+                // if (signingCached) {
+                //   getRepository(Signing).merge(JSON.parse(signingCached), obj);
+                //   await getRepository(Signing).save(JSON.parse(signingCached));
+                //   return res.status(200).json(JSON.parse(signingCached));
+                // } else {
+                // await client.setEx(signing.id, 3600, JSON.stringify(obj));
+                (0, typeorm_1.getRepository)(Signing_1.Signing).merge(signing, obj);
                 return [4 /*yield*/, (0, typeorm_1.getRepository)(Signing_1.Signing).save(signing)];
-            case 7:
+            case 3:
                 _b.sent();
+                // Saving the new updated signing
                 return [2 /*return*/, res.status(200).json(signing)];
-            case 8: return [3 /*break*/, 10];
-            case 9:
+            case 4:
                 err_3 = _b.sent();
                 return [2 /*return*/, res.status(500).json({ error: err_3.message })];
-            case 10: return [2 /*return*/];
+            case 5: return [2 /*return*/];
         }
     });
 }); };
