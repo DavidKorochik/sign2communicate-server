@@ -155,14 +155,7 @@ var updateSigning = function (req, res) { return __awaiter(void 0, void 0, void 
                 signing = _b.sent();
                 if (!signing)
                     return [2 /*return*/, res.status(404).json({ error: 'Signing not found' })];
-                // const signingCached = await client.get(id);
                 // Merging the changes that were made from the req.body to the signing that we have found
-                // if (signingCached) {
-                //   getRepository(Signing).merge(JSON.parse(signingCached), obj);
-                //   await getRepository(Signing).save(JSON.parse(signingCached));
-                //   return res.status(200).json(JSON.parse(signingCached));
-                // } else {
-                // await client.setEx(signing.id, 3600, JSON.stringify(obj));
                 (0, typeorm_1.getRepository)(Signing_1.Signing).merge(signing, obj);
                 return [4 /*yield*/, (0, typeorm_1.getRepository)(Signing_1.Signing).save(signing)];
             case 3:
