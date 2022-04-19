@@ -17,10 +17,7 @@ export const logInUser: any = async (req: Request, res: Response) => {
     // Find the user that is trying to log in
     const user = await User.findOne({ where: { personal_number } });
 
-    if (!user)
-      return res
-        .status(404)
-        .json({ error: 'User is not existed, create a user instead' });
+    if (!user) return res.status(404).json({ error: 'משתמש אינו קיים' });
 
     // Create a payload for the jwt
     const payload: IUserPayload = {
@@ -55,7 +52,7 @@ export const getLoggedInUser: any = async (
     // Find the user that is logged in based on the auth middleware
     const user = await User.findOne(req.user.id);
 
-    if (!user) return res.status(404).json({ error: 'User is not existed' });
+    if (!user) return res.status(404).json({ error: 'משתמש אינו קיים' });
 
     // Caching the user that is logged in
     await client.setEx(req.user.id, 3600, JSON.stringify(user));

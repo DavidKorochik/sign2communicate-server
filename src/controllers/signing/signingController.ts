@@ -62,8 +62,7 @@ export const getSignings: any = async (req: Request, res: Response) => {
     // Finding all of the signings in the database
     const signings: ISigning[] = await Signing.find();
 
-    if (!signings)
-      return res.status(404).json({ error: 'There are no signings' });
+    if (!signings) return res.status(404).json({ error: 'אין החתמות' });
 
     // Caching the signings
     await client.set('signings', JSON.stringify(signings));
@@ -100,7 +99,7 @@ export const updateSigning: any = async (req: Request, res: Response) => {
     // Finiding one signing with the id that is passed
     const signing = await Signing.findOne({ where: { id } });
 
-    if (!signing) return res.status(404).json({ error: 'Signing not found' });
+    if (!signing) return res.status(404).json({ error: 'החתמה לא נמצאה' });
 
     // Merging the changes that were made from the req.body to the signing that we have found
     getRepository(Signing).merge(signing, obj);
@@ -122,7 +121,7 @@ export const deleteSigning: any = async (req: Request, res: Response) => {
     // Searching for the signing that we wish to delete
     const signing: ISigning | undefined = await Signing.findOne(id);
 
-    if (!signing) return res.status(404).json({ error: 'Signing not found' });
+    if (!signing) return res.status(404).json({ error: 'החתמה לא נמצאה' });
 
     // Deleting the signing based on the id that was passed
     await Signing.delete(id);
@@ -144,7 +143,7 @@ export const deleteAllSignings: any = async (req: Request, res: Response) => {
     // Find all the signings that we watn to delete
     const signings = await Signing.find();
 
-    if (!signings) return res.status(404).json({ error: 'No signings found' });
+    if (!signings) return res.status(404).json({ error: 'החתמות לא נמצאו' });
 
     // Remove all of the signings
     await Signing.remove(signings);

@@ -21,7 +21,9 @@ export const createUser: any = async (req: Request, res: Response) => {
     });
 
     if (userExists)
-      return res.status(400).json({ error: 'User already exists' });
+      return res
+        .status(400)
+        .json({ error: 'משתמש קיים, אנא כנס למערכת במקום להירשם' });
 
     // We create a user based on his personal number, if the user is one of the listed personal numbers it will be automatically set to an admin role, if it is not one of the personal numbers listed it will be set automatically to a client role
     const user =
