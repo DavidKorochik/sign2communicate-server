@@ -62,7 +62,9 @@ var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
             case 2:
                 userExists = _b.sent();
                 if (userExists)
-                    return [2 /*return*/, res.status(400).json({ error: 'User already exists' })];
+                    return [2 /*return*/, res
+                            .status(400)
+                            .json({ error: 'משתמש קיים, אנא כנס למערכת במקום להירשם' })];
                 user = personal_number === '8811382' || personal_number === '8889611'
                     ? User_1.User.create({
                         name: name,

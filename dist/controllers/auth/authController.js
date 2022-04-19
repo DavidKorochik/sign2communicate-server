@@ -59,9 +59,7 @@ var logInUser = function (req, res) { return __awaiter(void 0, void 0, void 0, f
             case 2:
                 user = _a.sent();
                 if (!user)
-                    return [2 /*return*/, res
-                            .status(404)
-                            .json({ error: 'User is not existed, create a user instead' })];
+                    return [2 /*return*/, res.status(404).json({ error: 'משתמש אינו קיים' })];
                 payload = {
                     user: {
                         id: user.id,
@@ -95,7 +93,7 @@ var getLoggedInUser = function (req, res) { return __awaiter(void 0, void 0, voi
             case 1:
                 user = _a.sent();
                 if (!user)
-                    return [2 /*return*/, res.status(404).json({ error: 'User is not existed' })];
+                    return [2 /*return*/, res.status(404).json({ error: 'משתמש אינו קיים' })];
                 // Caching the user that is logged in
                 return [4 /*yield*/, redis_1.default.setEx(req.user.id, 3600, JSON.stringify(user))];
             case 2:
@@ -105,7 +103,7 @@ var getLoggedInUser = function (req, res) { return __awaiter(void 0, void 0, voi
             case 3:
                 userCached = _a.sent();
                 if (!userCached) return [3 /*break*/, 4];
-                return [2 /*return*/, res.status(200).json(userCached)];
+                return [2 /*return*/, res.status(200).json(JSON.parse(userCached))];
             case 4: return [4 /*yield*/, redis_1.default.setEx(req.user.id, 3600, JSON.stringify(user))];
             case 5:
                 _a.sent();

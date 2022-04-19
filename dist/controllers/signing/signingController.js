@@ -104,7 +104,7 @@ var getSignings = function (req, res) { return __awaiter(void 0, void 0, void 0,
             case 1:
                 signings = _a.sent();
                 if (!signings)
-                    return [2 /*return*/, res.status(404).json({ error: 'There are no signings' })];
+                    return [2 /*return*/, res.status(404).json({ error: 'אין החתמות' })];
                 // Caching the signings
                 return [4 /*yield*/, redis_1.default.set('signings', JSON.stringify(signings))];
             case 2:
@@ -154,7 +154,7 @@ var updateSigning = function (req, res) { return __awaiter(void 0, void 0, void 
             case 2:
                 signing = _b.sent();
                 if (!signing)
-                    return [2 /*return*/, res.status(404).json({ error: 'Signing not found' })];
+                    return [2 /*return*/, res.status(404).json({ error: 'החתמה לא נמצאה' })];
                 // Merging the changes that were made from the req.body to the signing that we have found
                 (0, typeorm_1.getRepository)(Signing_1.Signing).merge(signing, obj);
                 return [4 /*yield*/, (0, typeorm_1.getRepository)(Signing_1.Signing).save(signing)];
@@ -184,7 +184,7 @@ var deleteSigning = function (req, res) { return __awaiter(void 0, void 0, void 
             case 2:
                 signing = _a.sent();
                 if (!signing)
-                    return [2 /*return*/, res.status(404).json({ error: 'Signing not found' })];
+                    return [2 /*return*/, res.status(404).json({ error: 'החתמה לא נמצאה' })];
                 // Deleting the signing based on the id that was passed
                 return [4 /*yield*/, Signing_1.Signing.delete(id)];
             case 3:
@@ -218,7 +218,7 @@ var deleteAllSignings = function (req, res) { return __awaiter(void 0, void 0, v
             case 1:
                 signings = _a.sent();
                 if (!signings)
-                    return [2 /*return*/, res.status(404).json({ error: 'No signings found' })];
+                    return [2 /*return*/, res.status(404).json({ error: 'החתמות לא נמצאו' })];
                 // Remove all of the signings
                 return [4 /*yield*/, Signing_1.Signing.remove(signings)];
             case 2:
