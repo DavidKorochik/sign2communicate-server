@@ -1,4 +1,4 @@
-import { Signing } from '../../entites/signing/Signing';
+import { Signing } from '../../entites/signing/Signing.entity';
 import express, { Request, Response } from 'express';
 import { RequestExtendedWithUser } from '../../interfaces/user/user';
 import { ISigning } from '../../interfaces/signing/signing';
@@ -57,10 +57,17 @@ export const createSigning: any = async (
 };
 
 // Get all signings @/api/signing
-export const getSignings: any = async (req: Request, res: Response) => {
+export const getSignings: any = async (
+  req: RequestExtendedWithUser,
+  res: Response
+) => {
   try {
+    const signingRepository = getRepository(Signing);
+    const signings: ISigning[] = await signingRepository.find({
+      relations: ['user'],
+    });
+
     // Finding all of the signings in the database
-    const signings: ISigning[] = await Signing.find();
 
     if (!signings) return res.status(404).json({ error: 'אין החתמות' });
 

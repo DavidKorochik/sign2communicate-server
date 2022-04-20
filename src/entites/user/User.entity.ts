@@ -6,7 +6,7 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { Signing } from '../signing/Signing';
+import { Signing } from '../signing/Signing.entity';
 
 @Entity('user')
 export class User extends BaseEntity {

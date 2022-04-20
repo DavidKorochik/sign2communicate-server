@@ -1,9 +1,10 @@
 import jwt from 'jsonwebtoken';
-import { User } from '../../entites/user/User';
+import { User } from '../../entites/user/User.entity';
 import express, { Request, Response } from 'express';
 import { IUserPayload } from '../../interfaces/user/user';
 import client from '../../db/redis/redis';
 import dotenv from 'dotenv';
+import { getRepository } from 'typeorm';
 
 dotenv.config();
 
@@ -49,6 +50,11 @@ export const createUser: any = async (req: Request, res: Response) => {
     const payload: IUserPayload = {
       user: {
         id: user.id,
+        military_unit: user.military_unit,
+        name: user.name,
+        personal_number: user.personal_number,
+        phone_number: user.phone_number,
+        role: user.role,
       },
     };
 
@@ -71,7 +77,8 @@ export const createUser: any = async (req: Request, res: Response) => {
 export const getUsers: any = async (req: Request, res: Response) => {
   try {
     // We get all the users in the database
-    const users = await User.find();
+    const userRepository = getRepository(User);
+    const users = await userRepository.find({ relations: ['signings'] });
 
     if (!users) return res.status(404).json({ error: 'There are no users' });
 

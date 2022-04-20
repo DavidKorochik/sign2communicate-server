@@ -6,7 +6,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { User } from '../user/User';
+import { User } from '../user/User.entity';
 
 @Entity('signing')
 export class Signing extends BaseEntity {
@@ -41,6 +41,6 @@ export class Signing extends BaseEntity {
   description: string;
 
   @ManyToOne(() => User, (user) => user.signings)
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'user' })
   user: User;
 }

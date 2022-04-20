@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { User } from '../../entites/user/User';
+import { User } from '../../entites/user/User.entity';
 import client from '../../db/redis/redis';
 import {
   RequestExtendedWithUser,
   IUserPayload,
 } from '../../interfaces/user/user';
 import dotenv from 'dotenv';
+import { getRepository } from 'typeorm';
 
 dotenv.config();
 
@@ -15,7 +16,10 @@ export const logInUser: any = async (req: Request, res: Response) => {
   const { personal_number } = req.body;
   try {
     // Find the user that is trying to log in
-    const user = await User.findOne({ where: { personal_number } });
+    const userRepository = getRepository(User);
+    const user = await userRepository.findOne({
+      where: { personal_number },
+    });
 
     if (!user) return res.status(404).json({ error: 'משתמש אינו קיים' });
 
@@ -23,6 +27,11 @@ export const logInUser: any = async (req: Request, res: Response) => {
     const payload: IUserPayload = {
       user: {
         id: user.id,
+        military_unit: user.military_unit,
+        name: user.name,
+        personal_number: user.personal_number,
+        phone_number: user.phone_number,
+        role: user.role,
       },
     };
 
@@ -50,7 +59,10 @@ export const getLoggedInUser: any = async (
 ) => {
   try {
     // Find the user that is logged in based on the auth middleware
-    const user = await User.findOne(req.user.id);
+    const userRepository = getRepository(User);
+    const user = await userRepository.findOne(req.user.id, {
+      relations: ['signings'],
+    });
 
     if (!user) return res.status(404).json({ error: 'משתמש אינו קיים' });
 
