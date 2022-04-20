@@ -146,7 +146,10 @@ export const deleteSigning: any = async (req: Request, res: Response) => {
     await client.del(id);
 
     // Get all of the signings after we delete the signing with the corrsponding id
-    const signingsAfterDeletion: ISigning[] = await Signing.find();
+    const signingRepository = getRepository(Signing);
+    const signingsAfterDeletion: ISigning[] = await signingRepository.find({
+      relations: ['user'],
+    });
 
     res.status(200).json(signingsAfterDeletion);
   } catch (err: any) {
