@@ -63,9 +63,18 @@ export const getSignings: any = async (
 ) => {
   try {
     const signingRepository = getRepository(Signing);
-    const signings: ISigning[] = await signingRepository.find({
-      relations: ['user'],
-    });
+    let signings: ISigning[];
+
+    if (req.user.role === 'Client') {
+      signings = await signingRepository.find({
+        where: { user: req.user },
+        relations: ['user'],
+      });
+    } else {
+      signings = await signingRepository.find({
+        relations: ['user'],
+      });
+    }
 
     // Finding all of the signings in the database
 
