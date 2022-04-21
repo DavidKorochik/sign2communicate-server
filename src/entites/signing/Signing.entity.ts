@@ -40,6 +40,11 @@ export class Signing extends BaseEntity {
   @Column()
   description: string;
 
+  @Column({
+    default: 'None',
+  })
+  status: string;
+
   @ManyToOne(() => User, (user) => user.signings)
   @JoinColumn({ name: 'user' })
   user: User;

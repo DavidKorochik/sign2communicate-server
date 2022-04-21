@@ -11,11 +11,12 @@ dotenv.config();
 const router = express.Router();
 
 interface SigningUpdateBody {
-  description: string;
-  equipment: string[];
-  returningDate: string;
-  signingDate: string;
-  time: string;
+  description?: string;
+  equipment?: string[];
+  returningDate?: string;
+  signingDate?: string;
+  time?: string;
+  status?: string;
 }
 
 // Create a signing @/api/signing
@@ -100,7 +101,8 @@ export const getSignings: any = async (
 
 // Update a signing @/api/signing/:id
 export const updateSigning: any = async (req: Request, res: Response) => {
-  const { equipment, signingDate, returningDate, time, description } = req.body;
+  const { equipment, signingDate, returningDate, time, description, status } =
+    req.body;
   const obj = {} as SigningUpdateBody;
 
   if (description) obj.description = description;
@@ -108,21 +110,27 @@ export const updateSigning: any = async (req: Request, res: Response) => {
   if (returningDate) obj.returningDate = returningDate;
   if (time) obj.time = time;
   if (equipment) obj.equipment = equipment;
+  if (status) obj.status = status;
 
   const id = req.params.id;
 
   try {
+    const signingRepository = getRepository(Signing);
+
     // Finiding one signing with the id that is passed
-    const signing = await Signing.findOne({ where: { id } });
+    const signing = await signingRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
 
     if (!signing) return res.status(404).json({ error: 'החתמה לא נמצאה' });
 
     // Merging the changes that were made from the req.body to the signing that we have found
-    getRepository(Signing).merge(signing, obj);
-
-    await getRepository(Signing).save(signing);
+    signingRepository.merge(signing, obj);
 
     // Saving the new updated signing
+    await signingRepository.save(signing);
+
     return res.status(200).json(signing);
   } catch (err: any) {
     return res.status(500).json({ error: err.message });

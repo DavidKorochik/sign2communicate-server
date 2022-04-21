@@ -1,10 +1,11 @@
 export interface ISigning {
   id?: string;
   equipment: string[];
-  signingDate: string;
-  returningDate: string;
+  signingDate: string | Date;
+  returningDate: string | Date;
   time: string;
   description: string;
+  status: string;
   user?: {
     id: string;
     name: string;
