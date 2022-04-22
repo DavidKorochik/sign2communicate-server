@@ -1,3 +1,5 @@
+const asd = require('./dist/');
+
 module.exports = {
   type: 'postgres',
   url: process.env.DATABASE_URL,
@@ -13,10 +15,10 @@ module.exports = {
     },
   },
   synchronize: false,
-  entities: ['./dist/src/entity/**/*.entity.ts'],
-  migrations: ['./dist/src/migrations/**/*.ts'],
+  entities: ['./dist/entites/**/*.entity.js'],
+  migrations: ['./dist/migrations/**/*.js'],
   cli: {
-    entitiesDir: './dist/src/entities',
-    migrationsDir: './dist/src/migrations',
+    entitiesDir: './dist/entites',
+    migrationsDir: './dist/migrations',
   },
 };
