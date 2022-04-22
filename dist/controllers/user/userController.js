@@ -41,9 +41,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUser = exports.getUsers = exports.createUser = void 0;
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-var User_1 = require("../../entites/user/User");
+var User_entity_1 = require("../../entites/user/User.entity");
 var express_1 = __importDefault(require("express"));
 var dotenv_1 = __importDefault(require("dotenv"));
+var typeorm_1 = require("typeorm");
 dotenv_1.default.config();
 var router = express_1.default.Router();
 // Create a user @/api/user
@@ -56,7 +57,7 @@ var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                 _b.label = 1;
             case 1:
                 _b.trys.push([1, 4, , 5]);
-                return [4 /*yield*/, User_1.User.findOne({
+                return [4 /*yield*/, User_entity_1.User.findOne({
                         where: { personal_number: personal_number },
                     })];
             case 2:
@@ -66,14 +67,14 @@ var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                             .status(400)
                             .json({ error: 'משתמש קיים, אנא כנס למערכת במקום להירשם' })];
                 user = personal_number === '8811382' || personal_number === '8889611'
-                    ? User_1.User.create({
+                    ? User_entity_1.User.create({
                         name: name,
                         personal_number: personal_number,
                         phone_number: phone_number,
                         military_unit: military_unit,
                         role: 'Admin',
                     })
-                    : User_1.User.create({
+                    : User_entity_1.User.create({
                         name: name,
                         personal_number: personal_number,
                         phone_number: phone_number,
@@ -86,6 +87,11 @@ var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                 payload = {
                     user: {
                         id: user.id,
+                        military_unit: user.military_unit,
+                        name: user.name,
+                        personal_number: user.personal_number,
+                        phone_number: user.phone_number,
+                        role: user.role,
                     },
                 };
                 // We generate a jwt token for a user
@@ -106,12 +112,13 @@ var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
 exports.createUser = createUser;
 // Get all users @/api/user
 var getUsers = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var users, err_2;
+    var userRepository, users, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, User_1.User.find()];
+                userRepository = (0, typeorm_1.getRepository)(User_entity_1.User);
+                return [4 /*yield*/, userRepository.find({ relations: ['signings'] })];
             case 1:
                 users = _a.sent();
                 if (!users)
@@ -137,14 +144,14 @@ var deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 4, , 5]);
-                return [4 /*yield*/, User_1.User.findOne(id)];
+                return [4 /*yield*/, User_entity_1.User.findOne(id)];
             case 2:
                 user = _a.sent();
                 // if there is not a user we return a 404 status code
                 if (!user)
                     return [2 /*return*/, res.status(404).json({ error: 'There is no such user' })];
                 // if there is a user we delete it
-                return [4 /*yield*/, User_1.User.delete(id)];
+                return [4 /*yield*/, User_entity_1.User.delete(id)];
             case 3:
                 // if there is a user we delete it
                 _a.sent();

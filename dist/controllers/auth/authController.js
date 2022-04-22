@@ -41,13 +41,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLoggedInUser = exports.logInUser = void 0;
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-var User_1 = require("../../entites/user/User");
+var User_entity_1 = require("../../entites/user/User.entity");
 var redis_1 = __importDefault(require("../../db/redis/redis"));
 var dotenv_1 = __importDefault(require("dotenv"));
+var typeorm_1 = require("typeorm");
 dotenv_1.default.config();
 // Log in to an existing user @/api/auth
 var logInUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var personal_number, user, payload, err_1;
+    var personal_number, userRepository, user, payload, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -55,7 +56,10 @@ var logInUser = function (req, res) { return __awaiter(void 0, void 0, void 0, f
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, User_1.User.findOne({ where: { personal_number: personal_number } })];
+                userRepository = (0, typeorm_1.getRepository)(User_entity_1.User);
+                return [4 /*yield*/, userRepository.findOne({
+                        where: { personal_number: personal_number },
+                    })];
             case 2:
                 user = _a.sent();
                 if (!user)
@@ -63,6 +67,11 @@ var logInUser = function (req, res) { return __awaiter(void 0, void 0, void 0, f
                 payload = {
                     user: {
                         id: user.id,
+                        military_unit: user.military_unit,
+                        name: user.name,
+                        personal_number: user.personal_number,
+                        phone_number: user.phone_number,
+                        role: user.role,
                     },
                 };
                 // Assign the payload and create a new log in instance
@@ -84,12 +93,15 @@ var logInUser = function (req, res) { return __awaiter(void 0, void 0, void 0, f
 exports.logInUser = logInUser;
 // Get the logged in user @/api/auth
 var getLoggedInUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var user, userCached, err_2;
+    var userRepository, user, userCached, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 7, , 8]);
-                return [4 /*yield*/, User_1.User.findOne(req.user.id)];
+                userRepository = (0, typeorm_1.getRepository)(User_entity_1.User);
+                return [4 /*yield*/, userRepository.findOne(req.user.id, {
+                        relations: ['signings'],
+                    })];
             case 1:
                 user = _a.sent();
                 if (!user)

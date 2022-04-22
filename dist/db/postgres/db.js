@@ -42,8 +42,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.db = void 0;
 var typeorm_1 = require("typeorm");
 var dotenv_1 = __importDefault(require("dotenv"));
-var User_1 = require("../../entites/user/User");
-var Signing_1 = require("../../entites/signing/Signing");
+var User_entity_1 = require("../../entites/user/User.entity");
+var Signing_entity_1 = require("../../entites/signing/Signing.entity");
 dotenv_1.default.config();
 var db = function () { return __awaiter(void 0, void 0, void 0, function () {
     var err_1;
@@ -58,7 +58,7 @@ var db = function () { return __awaiter(void 0, void 0, void 0, function () {
                         username: process.env.DB_USERNAME,
                         password: process.env.DB_PASSWORD,
                         database: process.env.DB_NAME,
-                        entities: [User_1.User, Signing_1.Signing],
+                        entities: [User_entity_1.User, Signing_entity_1.Signing],
                         synchronize: true,
                     })];
             case 1:

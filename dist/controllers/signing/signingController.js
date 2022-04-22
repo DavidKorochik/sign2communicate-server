@@ -40,7 +40,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteAllSignings = exports.deleteSigning = exports.updateSigning = exports.getSignings = exports.createSigning = void 0;
-var Signing_1 = require("../../entites/signing/Signing");
+var Signing_entity_1 = require("../../entites/signing/Signing.entity");
 var express_1 = __importDefault(require("express"));
 var redis_1 = __importDefault(require("../../db/redis/redis"));
 var dotenv_1 = __importDefault(require("dotenv"));
@@ -57,7 +57,7 @@ var createSigning = function (req, res) { return __awaiter(void 0, void 0, void 
                 _b.label = 1;
             case 1:
                 _b.trys.push([1, 8, , 9]);
-                signing = Signing_1.Signing.create({
+                signing = Signing_entity_1.Signing.create({
                     equipment: equipment,
                     signingDate: signingDate,
                     returningDate: returningDate,
@@ -95,46 +95,61 @@ var createSigning = function (req, res) { return __awaiter(void 0, void 0, void 
 exports.createSigning = createSigning;
 // Get all signings @/api/signing
 var getSignings = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var signings, signingsCached, err_2;
+    var signingRepository, signings, signingsCached, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 7, , 8]);
-                return [4 /*yield*/, Signing_1.Signing.find()];
+                _a.trys.push([0, 10, , 11]);
+                signingRepository = (0, typeorm_1.getRepository)(Signing_entity_1.Signing);
+                signings = void 0;
+                if (!(req.user.role === 'Client')) return [3 /*break*/, 2];
+                return [4 /*yield*/, signingRepository.find({
+                        where: { user: req.user },
+                        relations: ['user'],
+                    })];
             case 1:
                 signings = _a.sent();
+                return [3 /*break*/, 4];
+            case 2: return [4 /*yield*/, signingRepository.find({
+                    relations: ['user'],
+                })];
+            case 3:
+                signings = _a.sent();
+                _a.label = 4;
+            case 4:
+                // Finding all of the signings in the database
                 if (!signings)
                     return [2 /*return*/, res.status(404).json({ error: 'אין החתמות' })];
                 // Caching the signings
                 return [4 /*yield*/, redis_1.default.set('signings', JSON.stringify(signings))];
-            case 2:
+            case 5:
                 // Caching the signings
                 _a.sent();
                 return [4 /*yield*/, redis_1.default.get('signings')];
-            case 3:
+            case 6:
                 signingsCached = _a.sent();
-                if (!signingsCached) return [3 /*break*/, 4];
+                if (!signingsCached) return [3 /*break*/, 7];
                 return [2 /*return*/, res.status(200).json(JSON.parse(signingsCached))];
-            case 4: return [4 /*yield*/, redis_1.default.set('signings', JSON.stringify(signings))];
-            case 5:
+            case 7: return [4 /*yield*/, redis_1.default.set('signings', JSON.stringify(signings))];
+            case 8:
                 _a.sent();
                 return [2 /*return*/, res.status(200).json(signings)];
-            case 6: return [3 /*break*/, 8];
-            case 7:
+            case 9: return [3 /*break*/, 11];
+            case 10:
                 err_2 = _a.sent();
                 return [2 /*return*/, res.status(500).json({ error: err_2.message })];
-            case 8: return [2 /*return*/];
+            case 11: return [2 /*return*/];
         }
     });
 }); };
 exports.getSignings = getSignings;
 // Update a signing @/api/signing/:id
 var updateSigning = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, equipment, signingDate, returningDate, time, description, obj, id, signing, err_3;
+    var _a, equipment, signingDate, returningDate, time, description, status, obj, id, signingRepository, signing, err_3;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                _a = req.body, equipment = _a.equipment, signingDate = _a.signingDate, returningDate = _a.returningDate, time = _a.time, description = _a.description;
+                _a = req.body, equipment = _a.equipment, signingDate = _a.signingDate, returningDate = _a.returningDate, time = _a.time, description = _a.description, status = _a.status;
                 obj = {};
                 if (description)
                     obj.description = description;
@@ -146,21 +161,28 @@ var updateSigning = function (req, res) { return __awaiter(void 0, void 0, void 
                     obj.time = time;
                 if (equipment)
                     obj.equipment = equipment;
+                if (status)
+                    obj.status = status;
                 id = req.params.id;
                 _b.label = 1;
             case 1:
                 _b.trys.push([1, 4, , 5]);
-                return [4 /*yield*/, Signing_1.Signing.findOne({ where: { id: id } })];
+                signingRepository = (0, typeorm_1.getRepository)(Signing_entity_1.Signing);
+                return [4 /*yield*/, signingRepository.findOne({
+                        where: { id: id },
+                        relations: ['user'],
+                    })];
             case 2:
                 signing = _b.sent();
                 if (!signing)
                     return [2 /*return*/, res.status(404).json({ error: 'החתמה לא נמצאה' })];
                 // Merging the changes that were made from the req.body to the signing that we have found
-                (0, typeorm_1.getRepository)(Signing_1.Signing).merge(signing, obj);
-                return [4 /*yield*/, (0, typeorm_1.getRepository)(Signing_1.Signing).save(signing)];
-            case 3:
-                _b.sent();
+                signingRepository.merge(signing, obj);
                 // Saving the new updated signing
+                return [4 /*yield*/, signingRepository.save(signing)];
+            case 3:
+                // Saving the new updated signing
+                _b.sent();
                 return [2 /*return*/, res.status(200).json(signing)];
             case 4:
                 err_3 = _b.sent();
@@ -172,7 +194,7 @@ var updateSigning = function (req, res) { return __awaiter(void 0, void 0, void 
 exports.updateSigning = updateSigning;
 // Delete a signing @/api/signing/:id
 var deleteSigning = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var id, signing, signingsAfterDeletion, err_4;
+    var id, signing, signingRepository, signingsAfterDeletion, err_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -180,13 +202,13 @@ var deleteSigning = function (req, res) { return __awaiter(void 0, void 0, void 
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 6, , 7]);
-                return [4 /*yield*/, Signing_1.Signing.findOne(id)];
+                return [4 /*yield*/, Signing_entity_1.Signing.findOne(id)];
             case 2:
                 signing = _a.sent();
                 if (!signing)
                     return [2 /*return*/, res.status(404).json({ error: 'החתמה לא נמצאה' })];
                 // Deleting the signing based on the id that was passed
-                return [4 /*yield*/, Signing_1.Signing.delete(id)];
+                return [4 /*yield*/, Signing_entity_1.Signing.delete(id)];
             case 3:
                 // Deleting the signing based on the id that was passed
                 _a.sent();
@@ -195,7 +217,10 @@ var deleteSigning = function (req, res) { return __awaiter(void 0, void 0, void 
             case 4:
                 // Deleting the signing from the cache
                 _a.sent();
-                return [4 /*yield*/, Signing_1.Signing.find()];
+                signingRepository = (0, typeorm_1.getRepository)(Signing_entity_1.Signing);
+                return [4 /*yield*/, signingRepository.find({
+                        relations: ['user'],
+                    })];
             case 5:
                 signingsAfterDeletion = _a.sent();
                 res.status(200).json(signingsAfterDeletion);
@@ -214,13 +239,13 @@ var deleteAllSignings = function (req, res) { return __awaiter(void 0, void 0, v
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 3, , 4]);
-                return [4 /*yield*/, Signing_1.Signing.find()];
+                return [4 /*yield*/, Signing_entity_1.Signing.find()];
             case 1:
                 signings = _a.sent();
                 if (!signings)
                     return [2 /*return*/, res.status(404).json({ error: 'החתמות לא נמצאו' })];
                 // Remove all of the signings
-                return [4 /*yield*/, Signing_1.Signing.remove(signings)];
+                return [4 /*yield*/, Signing_entity_1.Signing.remove(signings)];
             case 2:
                 // Remove all of the signings
                 _a.sent();
