@@ -1,4 +1,4 @@
-const asd = require('./dist/');
+const doteenv = require('dotenv').config();
 
 module.exports = {
   type: 'postgres',
