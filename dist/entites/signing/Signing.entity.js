@@ -76,7 +76,6 @@ var Signing = /** @class */ (function (_super) {
     ], Signing.prototype, "status", void 0);
     __decorate([
         (0, typeorm_1.ManyToOne)(function () { return User_entity_1.User; }, function (user) { return user.signings; }),
-        (0, typeorm_1.JoinColumn)({ name: 'user' }),
         __metadata("design:type", User_entity_1.User)
     ], Signing.prototype, "user", void 0);
     Signing = __decorate([
