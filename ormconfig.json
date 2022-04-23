@@ -1,0 +1,24 @@
+{
+  "url": "postgres://djehhdbkckazku:5f313dfe03584547450fe04c3ba9746ac23441612fecfe2f5db746c235cff3b7@ec2-52-48-159-67.eu-west-1.compute.amazonaws.com:5432/dbi43clojl7f1q",
+  "type": "postgres",
+  "host": "ec2-52-48-159-67.eu-west-1.compute.amazonaws.com",
+  "port": 5432,
+  "username": "djehhdbkckazku",
+  "password": "5f313dfe03584547450fe04c3ba9746ac23441612fecfe2f5db746c235cff3b7",
+  "database": "dbi43clojl7f1q",
+  "migrations": ["dist/migrations/*.js"],
+  "migrationsRun": true,
+  "entities": ["dist/entites/**/*.entity.js"],
+  "synchronize": false,
+  "ssl": true,
+  "extra": {
+    "ssl": {
+      "rejectUnauthorized": false
+    }
+  },
+  "logging": true,
+  "cli": {
+    "entitiesDir": "src/entites",
+    "migrationsDir": "src/migrations"
+  }
+}
