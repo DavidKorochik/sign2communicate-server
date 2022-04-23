@@ -20,7 +20,7 @@
 
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://sign2communicate.vercel.app)
+[sign2communicate site link](https://sign2communicate.vercel.app)
 
 This part of the project is the server side part.
 
