@@ -38,5 +38,7 @@ The user can see all of his requested signings and the admin can manage all of t
 - [PostgreSQL](https://www.postgresql.org/)
 - [TypeORM](https://typeorm.io/)
 - [Redis](https://redis.io/)
+- [Express.js](https://expressjs.com/)
+- [JWT](https://jwt.io/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
