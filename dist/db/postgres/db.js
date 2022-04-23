@@ -59,6 +59,12 @@ var db = function () { return __awaiter(void 0, void 0, void 0, function () {
                         username: process.env.DB_USERNAME,
                         password: process.env.DB_PASSWORD,
                         database: process.env.DB_NAME,
+                        ssl: true,
+                        extra: {
+                            ssl: {
+                                rejectUnauthorized: false,
+                            },
+                        },
                         entities: [User_entity_1.User, Signing_entity_1.Signing],
                         synchronize: Boolean(process.env.DB_SYNCHRONIZE),
                     })];
