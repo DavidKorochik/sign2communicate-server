@@ -1,4 +1,4 @@
-import { createConnection } from 'typeorm';
+import { createConnection, getConnectionOptions } from 'typeorm';
 import dotenv from 'dotenv';
 import { User } from '../../entites/user/User.entity';
 import { Signing } from '../../entites/signing/Signing.entity';
@@ -24,7 +24,8 @@ export const db = async () => {
     //   },
     // });
 
-    await createConnection();
+    const connectionOptions = await getConnectionOptions();
+    await createConnection(connectionOptions);
 
     console.log('Connected to the database');
   } catch (err) {

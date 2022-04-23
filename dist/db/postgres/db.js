@@ -44,53 +44,24 @@ var typeorm_1 = require("typeorm");
 var dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 var db = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var err_1;
+    var connectionOptions, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 2, , 3]);
-                // await createConnection({
-                //   url: process.env.DATABASE_URL,
-                //   type: 'postgres',
-                //   host: process.env.DB_HOST,
-                //   port: 5432,
-                //   username: process.env.DB_USERNAME,
-                //   password: process.env.DB_PASSWORD,
-                //   database: process.env.DB_NAME,
-                //   entities: [User, Signing],
-                //   synchronize: false,
-                //   migrations: ['../../../dist/src/migrations/**/*.ts'],
-                //   cli: {
-                //     migrationsDir: '../../../dist/src/migrations/',
-                //     entitiesDir: '../../../dist/src/entities',
-                //   },
-                // });
-                return [4 /*yield*/, (0, typeorm_1.createConnection)()];
+                _a.trys.push([0, 3, , 4]);
+                return [4 /*yield*/, (0, typeorm_1.getConnectionOptions)()];
             case 1:
-                // await createConnection({
-                //   url: process.env.DATABASE_URL,
-                //   type: 'postgres',
-                //   host: process.env.DB_HOST,
-                //   port: 5432,
-                //   username: process.env.DB_USERNAME,
-                //   password: process.env.DB_PASSWORD,
-                //   database: process.env.DB_NAME,
-                //   entities: [User, Signing],
-                //   synchronize: false,
-                //   migrations: ['../../../dist/src/migrations/**/*.ts'],
-                //   cli: {
-                //     migrationsDir: '../../../dist/src/migrations/',
-                //     entitiesDir: '../../../dist/src/entities',
-                //   },
-                // });
+                connectionOptions = _a.sent();
+                return [4 /*yield*/, (0, typeorm_1.createConnection)(connectionOptions)];
+            case 2:
                 _a.sent();
                 console.log('Connected to the database');
-                return [3 /*break*/, 3];
-            case 2:
+                return [3 /*break*/, 4];
+            case 3:
                 err_1 = _a.sent();
                 console.error(err_1);
-                return [3 /*break*/, 3];
-            case 3: return [2 /*return*/];
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
         }
     });
 }); };
