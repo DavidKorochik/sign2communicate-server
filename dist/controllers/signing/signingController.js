@@ -42,20 +42,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteAllSignings = exports.deleteSigning = exports.updateSigning = exports.getSignings = exports.createSigning = void 0;
 var Signing_entity_1 = require("../../entites/signing/Signing.entity");
 var express_1 = __importDefault(require("express"));
+var redis_1 = __importDefault(require("../../db/redis/redis"));
 var dotenv_1 = __importDefault(require("dotenv"));
 var typeorm_1 = require("typeorm");
 dotenv_1.default.config();
 var router = express_1.default.Router();
 // Create a signing @/api/signing
 var createSigning = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, equipment, signingDate, returningDate, time, description, signing, err_1;
+    var _a, equipment, signingDate, returningDate, time, description, signing, signingCached, err_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 _a = req.body, equipment = _a.equipment, signingDate = _a.signingDate, returningDate = _a.returningDate, time = _a.time, description = _a.description;
                 _b.label = 1;
             case 1:
-                _b.trys.push([1, 3, , 4]);
+                _b.trys.push([1, 8, , 9]);
                 signing = Signing_entity_1.Signing.create({
                     equipment: equipment,
                     signingDate: signingDate,
@@ -65,37 +66,40 @@ var createSigning = function (req, res) { return __awaiter(void 0, void 0, void 
                     user: req.user,
                 });
                 // Caching the new signings that was created
-                // await client.set(signing.id, JSON.stringify(signing));
-                // const signingCached = await client.get(signing.id);
-                // Saving the signing to the database
-                return [4 /*yield*/, signing.save()];
+                return [4 /*yield*/, redis_1.default.set(signing.id, JSON.stringify(signing))];
             case 2:
                 // Caching the new signings that was created
-                // await client.set(signing.id, JSON.stringify(signing));
-                // const signingCached = await client.get(signing.id);
+                _b.sent();
+                return [4 /*yield*/, redis_1.default.get(signing.id)];
+            case 3:
+                signingCached = _b.sent();
+                // Saving the signing to the database
+                return [4 /*yield*/, signing.save()];
+            case 4:
                 // Saving the signing to the database
                 _b.sent();
-                // Checking if there is the signing that was created cached, if not return the signing that was created from the database
-                // if (signingCached) {
-                // return res.status(201).json(JSON.parse(signingCached));
-                // } else {
-                // await client.set(signing.id, JSON.stringify(signing));
+                if (!signingCached) return [3 /*break*/, 5];
+                return [2 /*return*/, res.status(201).json(JSON.parse(signingCached))];
+            case 5: return [4 /*yield*/, redis_1.default.set(signing.id, JSON.stringify(signing))];
+            case 6:
+                _b.sent();
                 return [2 /*return*/, res.status(201).json(signing)];
-            case 3:
+            case 7: return [3 /*break*/, 9];
+            case 8:
                 err_1 = _b.sent();
                 return [2 /*return*/, res.status(500).json({ error: err_1.message })];
-            case 4: return [2 /*return*/];
+            case 9: return [2 /*return*/];
         }
     });
 }); };
 exports.createSigning = createSigning;
 // Get all signings @/api/signing
 var getSignings = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var signingRepository, signings, err_2;
+    var signingRepository, signings, signingsCached, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 5, , 6]);
+                _a.trys.push([0, 10, , 11]);
                 signingRepository = (0, typeorm_1.getRepository)(Signing_entity_1.Signing);
                 signings = void 0;
                 if (!(req.user.role === 'Client')) return [3 /*break*/, 2];
@@ -117,19 +121,24 @@ var getSignings = function (req, res) { return __awaiter(void 0, void 0, void 0,
                 if (!signings)
                     return [2 /*return*/, res.status(404).json({ error: 'אין החתמות' })];
                 // Caching the signings
-                // await client.set('signings', JSON.stringify(signings));
-                // Getting the cached signings
-                // const signingsCached = await client.get('signings');
-                // Checking if there are any signings cached, if not return the signings from the database
-                // if (signingsCached) {
-                // return res.status(200).json(JSON.parse(signingsCached));
-                // } else {
-                // await client.set('signings', JSON.stringify(signings));
-                return [2 /*return*/, res.status(200).json(signings)];
+                return [4 /*yield*/, redis_1.default.set('signings', JSON.stringify(signings))];
             case 5:
+                // Caching the signings
+                _a.sent();
+                return [4 /*yield*/, redis_1.default.get('signings')];
+            case 6:
+                signingsCached = _a.sent();
+                if (!signingsCached) return [3 /*break*/, 7];
+                return [2 /*return*/, res.status(200).json(JSON.parse(signingsCached))];
+            case 7: return [4 /*yield*/, redis_1.default.set('signings', JSON.stringify(signings))];
+            case 8:
+                _a.sent();
+                return [2 /*return*/, res.status(200).json(signings)];
+            case 9: return [3 /*break*/, 11];
+            case 10:
                 err_2 = _a.sent();
                 return [2 /*return*/, res.status(500).json({ error: err_2.message })];
-            case 6: return [2 /*return*/];
+            case 11: return [2 /*return*/];
         }
     });
 }); };
