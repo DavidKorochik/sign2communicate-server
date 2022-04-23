@@ -42,7 +42,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLoggedInUser = exports.logInUser = void 0;
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var User_entity_1 = require("../../entites/user/User.entity");
-var redis_1 = __importDefault(require("../../db/redis/redis"));
 var dotenv_1 = __importDefault(require("dotenv"));
 var typeorm_1 = require("typeorm");
 dotenv_1.default.config();
@@ -93,11 +92,11 @@ var logInUser = function (req, res) { return __awaiter(void 0, void 0, void 0, f
 exports.logInUser = logInUser;
 // Get the logged in user @/api/auth
 var getLoggedInUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var userRepository, user, userCached, err_2;
+    var userRepository, user, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 7, , 8]);
+                _a.trys.push([0, 2, , 3]);
                 userRepository = (0, typeorm_1.getRepository)(User_entity_1.User);
                 return [4 /*yield*/, userRepository.findOne(req.user.id, {
                         relations: ['signings'],
@@ -107,24 +106,19 @@ var getLoggedInUser = function (req, res) { return __awaiter(void 0, void 0, voi
                 if (!user)
                     return [2 /*return*/, res.status(404).json({ error: 'משתמש אינו קיים' })];
                 // Caching the user that is logged in
-                return [4 /*yield*/, redis_1.default.setEx(req.user.id, 3600, JSON.stringify(user))];
-            case 2:
-                // Caching the user that is logged in
-                _a.sent();
-                return [4 /*yield*/, redis_1.default.get(req.user.id)];
-            case 3:
-                userCached = _a.sent();
-                if (!userCached) return [3 /*break*/, 4];
-                return [2 /*return*/, res.status(200).json(JSON.parse(userCached))];
-            case 4: return [4 /*yield*/, redis_1.default.setEx(req.user.id, 3600, JSON.stringify(user))];
-            case 5:
-                _a.sent();
+                // await client.setEx(req.user.id, 3600, JSON.stringify(user));
+                // Getting the cached in user that is logged in
+                // const userCached = await client.get(req.user.id);
+                // Checking if the user that is logged in is in the cache we return it, if not we set it to the cache and return the user that is saved in the database
+                // if (userCached) {
+                // return res.status(200).json(JSON.parse(userCached));
+                // } else {
+                // await client.setEx(req.user.id, 3600, JSON.stringify(user));
                 return [2 /*return*/, res.status(200).json(user)];
-            case 6: return [3 /*break*/, 8];
-            case 7:
+            case 2:
                 err_2 = _a.sent();
                 return [2 /*return*/, res.status(500).json({ error: err_2.message })];
-            case 8: return [2 /*return*/];
+            case 3: return [2 /*return*/];
         }
     });
 }); };

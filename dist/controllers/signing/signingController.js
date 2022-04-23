@@ -42,21 +42,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteAllSignings = exports.deleteSigning = exports.updateSigning = exports.getSignings = exports.createSigning = void 0;
 var Signing_entity_1 = require("../../entites/signing/Signing.entity");
 var express_1 = __importDefault(require("express"));
-var redis_1 = __importDefault(require("../../db/redis/redis"));
 var dotenv_1 = __importDefault(require("dotenv"));
 var typeorm_1 = require("typeorm");
 dotenv_1.default.config();
 var router = express_1.default.Router();
 // Create a signing @/api/signing
 var createSigning = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, equipment, signingDate, returningDate, time, description, signing, signingCached, err_1;
+    var _a, equipment, signingDate, returningDate, time, description, signing, err_1;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 _a = req.body, equipment = _a.equipment, signingDate = _a.signingDate, returningDate = _a.returningDate, time = _a.time, description = _a.description;
                 _b.label = 1;
             case 1:
-                _b.trys.push([1, 8, , 9]);
+                _b.trys.push([1, 3, , 4]);
                 signing = Signing_entity_1.Signing.create({
                     equipment: equipment,
                     signingDate: signingDate,
@@ -66,40 +65,37 @@ var createSigning = function (req, res) { return __awaiter(void 0, void 0, void 
                     user: req.user,
                 });
                 // Caching the new signings that was created
-                return [4 /*yield*/, redis_1.default.set(signing.id, JSON.stringify(signing))];
-            case 2:
-                // Caching the new signings that was created
-                _b.sent();
-                return [4 /*yield*/, redis_1.default.get(signing.id)];
-            case 3:
-                signingCached = _b.sent();
+                // await client.set(signing.id, JSON.stringify(signing));
+                // const signingCached = await client.get(signing.id);
                 // Saving the signing to the database
                 return [4 /*yield*/, signing.save()];
-            case 4:
+            case 2:
+                // Caching the new signings that was created
+                // await client.set(signing.id, JSON.stringify(signing));
+                // const signingCached = await client.get(signing.id);
                 // Saving the signing to the database
                 _b.sent();
-                if (!signingCached) return [3 /*break*/, 5];
-                return [2 /*return*/, res.status(201).json(JSON.parse(signingCached))];
-            case 5: return [4 /*yield*/, redis_1.default.set(signing.id, JSON.stringify(signing))];
-            case 6:
-                _b.sent();
+                // Checking if there is the signing that was created cached, if not return the signing that was created from the database
+                // if (signingCached) {
+                // return res.status(201).json(JSON.parse(signingCached));
+                // } else {
+                // await client.set(signing.id, JSON.stringify(signing));
                 return [2 /*return*/, res.status(201).json(signing)];
-            case 7: return [3 /*break*/, 9];
-            case 8:
+            case 3:
                 err_1 = _b.sent();
                 return [2 /*return*/, res.status(500).json({ error: err_1.message })];
-            case 9: return [2 /*return*/];
+            case 4: return [2 /*return*/];
         }
     });
 }); };
 exports.createSigning = createSigning;
 // Get all signings @/api/signing
 var getSignings = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var signingRepository, signings, signingsCached, err_2;
+    var signingRepository, signings, err_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 10, , 11]);
+                _a.trys.push([0, 5, , 6]);
                 signingRepository = (0, typeorm_1.getRepository)(Signing_entity_1.Signing);
                 signings = void 0;
                 if (!(req.user.role === 'Client')) return [3 /*break*/, 2];
@@ -121,24 +117,19 @@ var getSignings = function (req, res) { return __awaiter(void 0, void 0, void 0,
                 if (!signings)
                     return [2 /*return*/, res.status(404).json({ error: 'אין החתמות' })];
                 // Caching the signings
-                return [4 /*yield*/, redis_1.default.set('signings', JSON.stringify(signings))];
-            case 5:
-                // Caching the signings
-                _a.sent();
-                return [4 /*yield*/, redis_1.default.get('signings')];
-            case 6:
-                signingsCached = _a.sent();
-                if (!signingsCached) return [3 /*break*/, 7];
-                return [2 /*return*/, res.status(200).json(JSON.parse(signingsCached))];
-            case 7: return [4 /*yield*/, redis_1.default.set('signings', JSON.stringify(signings))];
-            case 8:
-                _a.sent();
+                // await client.set('signings', JSON.stringify(signings));
+                // Getting the cached signings
+                // const signingsCached = await client.get('signings');
+                // Checking if there are any signings cached, if not return the signings from the database
+                // if (signingsCached) {
+                // return res.status(200).json(JSON.parse(signingsCached));
+                // } else {
+                // await client.set('signings', JSON.stringify(signings));
                 return [2 /*return*/, res.status(200).json(signings)];
-            case 9: return [3 /*break*/, 11];
-            case 10:
+            case 5:
                 err_2 = _a.sent();
                 return [2 /*return*/, res.status(500).json({ error: err_2.message })];
-            case 11: return [2 /*return*/];
+            case 6: return [2 /*return*/];
         }
     });
 }); };
@@ -201,7 +192,7 @@ var deleteSigning = function (req, res) { return __awaiter(void 0, void 0, void 
                 id = req.params.id;
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 6, , 7]);
+                _a.trys.push([1, 5, , 6]);
                 return [4 /*yield*/, Signing_entity_1.Signing.findOne(id)];
             case 2:
                 signing = _a.sent();
@@ -212,23 +203,18 @@ var deleteSigning = function (req, res) { return __awaiter(void 0, void 0, void 
             case 3:
                 // Deleting the signing based on the id that was passed
                 _a.sent();
-                // Deleting the signing from the cache
-                return [4 /*yield*/, redis_1.default.del(id)];
-            case 4:
-                // Deleting the signing from the cache
-                _a.sent();
                 signingRepository = (0, typeorm_1.getRepository)(Signing_entity_1.Signing);
                 return [4 /*yield*/, signingRepository.find({
                         relations: ['user'],
                     })];
-            case 5:
+            case 4:
                 signingsAfterDeletion = _a.sent();
                 res.status(200).json(signingsAfterDeletion);
-                return [3 /*break*/, 7];
-            case 6:
+                return [3 /*break*/, 6];
+            case 5:
                 err_4 = _a.sent();
                 return [2 /*return*/, res.status(500).json({ error: err_4.message })];
-            case 7: return [2 /*return*/];
+            case 6: return [2 /*return*/];
         }
     });
 }); };

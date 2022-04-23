@@ -38,20 +38,20 @@ export const createSigning: any = async (
     });
 
     // Caching the new signings that was created
-    await client.set(signing.id, JSON.stringify(signing));
+    // await client.set(signing.id, JSON.stringify(signing));
 
-    const signingCached = await client.get(signing.id);
+    // const signingCached = await client.get(signing.id);
 
     // Saving the signing to the database
     await signing.save();
 
     // Checking if there is the signing that was created cached, if not return the signing that was created from the database
-    if (signingCached) {
-      return res.status(201).json(JSON.parse(signingCached));
-    } else {
-      await client.set(signing.id, JSON.stringify(signing));
-      return res.status(201).json(signing);
-    }
+    // if (signingCached) {
+    // return res.status(201).json(JSON.parse(signingCached));
+    // } else {
+    // await client.set(signing.id, JSON.stringify(signing));
+    return res.status(201).json(signing);
+    // }
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
@@ -82,18 +82,18 @@ export const getSignings: any = async (
     if (!signings) return res.status(404).json({ error: 'אין החתמות' });
 
     // Caching the signings
-    await client.set('signings', JSON.stringify(signings));
+    // await client.set('signings', JSON.stringify(signings));
 
     // Getting the cached signings
-    const signingsCached = await client.get('signings');
+    // const signingsCached = await client.get('signings');
 
     // Checking if there are any signings cached, if not return the signings from the database
-    if (signingsCached) {
-      return res.status(200).json(JSON.parse(signingsCached));
-    } else {
-      await client.set('signings', JSON.stringify(signings));
-      return res.status(200).json(signings);
-    }
+    // if (signingsCached) {
+    // return res.status(200).json(JSON.parse(signingsCached));
+    // } else {
+    // await client.set('signings', JSON.stringify(signings));
+    return res.status(200).json(signings);
+    // }
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
@@ -151,7 +151,7 @@ export const deleteSigning: any = async (req: Request, res: Response) => {
     await Signing.delete(id);
 
     // Deleting the signing from the cache
-    await client.del(id);
+    // await client.del(id);
 
     // Get all of the signings after we delete the signing with the corrsponding id
     const signingRepository = getRepository(Signing);
