@@ -42,26 +42,35 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.db = void 0;
 var typeorm_1 = require("typeorm");
 var dotenv_1 = __importDefault(require("dotenv"));
+var User_entity_1 = require("../../entites/user/User.entity");
+var Signing_entity_1 = require("../../entites/signing/Signing.entity");
 dotenv_1.default.config();
 var db = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var connectionOptions, err_1;
+    var err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 3, , 4]);
-                return [4 /*yield*/, (0, typeorm_1.getConnectionOptions)()];
+                _a.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, (0, typeorm_1.createConnection)({
+                        url: process.env.DATABASE_URL,
+                        type: 'postgres',
+                        host: process.env.DB_HOST,
+                        port: Number(process.env.DB_PORT),
+                        username: process.env.DB_USERNAME,
+                        password: process.env.DB_PASSWORD,
+                        database: process.env.DB_NAME,
+                        entities: [User_entity_1.User, Signing_entity_1.Signing],
+                        synchronize: Boolean(process.env.DB_SYNCHRONIZE),
+                    })];
             case 1:
-                connectionOptions = _a.sent();
-                return [4 /*yield*/, (0, typeorm_1.createConnection)(connectionOptions)];
-            case 2:
                 _a.sent();
                 console.log('Connected to the database');
-                return [3 /*break*/, 4];
-            case 3:
+                return [3 /*break*/, 3];
+            case 2:
                 err_1 = _a.sent();
                 console.error(err_1);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
